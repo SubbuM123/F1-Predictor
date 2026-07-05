@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Championship Forecast — Driver Title Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">2026 Season &middot; Model Prediction</div>
+      <h1 class="title">Championship <span class="accent">Prediction</span></h1>
+      <p class="subtitle">Models finishing probabilities for every driver on the grid, weighed against how this model has actually performed at this stage of past seasons (trained and tested from 2015-2025).</p>
+    </div>
+    <div class="masthead-right">
+      <div class="label">Drivers Tracked</div>
+      <div class="value"><b id="driverCount">22</b> across 11 teams</div>
+    </div>
+  </header>
+
+  <section class="scrubber-panel" aria-label="Season progress control">
+    <div class="scrubber-top">
+      <div>
+        <div class="scrubber-heading">Set the point in the season</div>
+      </div>
+      <div class="scrubber-readout">
+        <span class="num" id="racesLeftNum">14</span>
+        <span class="txt">races<br>remaining</span>
+      </div>
+    </div>
+    <div class="slider-wrap">
+      <div class="track-bg"><div class="track-fill" id="trackFill"></div></div>
+      <input type="range" class="scrubber" id="scrubber" min="1" max="18" value="14" step="1" aria-label="Races remaining">
+    </div>
+    <div class="ticks" id="ticks"></div>
+    <p class="scrubber-hint">Drag to see how confident this model has historically been with <b id="hintNum">14</b> races left to run — then hover any probability below to see the full track record.</p>
+  </section>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="board-header-row">
+    <div class="board-title">Driver Standings &mdash; Projected (After Race 8, in a 22 Race Season)</div>
+    <div class="board-note">Sorted by projected points</div>
+  </div>
+
+  <div class="board">
+    <div class="row-grid board-colhead">
+      <span></span><span></span>
+      <span class="ch-team">Driver</span>
+      <span class="ch-pts">Pts</span>
+      <span class="ch-prob">P1</span>
+      <span class="ch-prob">Podium</span>
+      <span class="ch-prob">Top 5</span>
+      <span class="ch-prob">Top 10</span>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--purple)"></span>Finishing probability &mdash; deeper fill means higher confidence</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--amber)"></span>Races remaining in the scrubber above</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--text-2)"></span>Projected points, scaled to the current leader</div>
+  </div>
+
+  <footer class="page-footer">
+    Probabilities are model output, not certainty &mdash; treat them as a weather forecast for the championship. Track-record figures in the hover cards are historical accuracy measured across past seasons at the matching number of races remaining, not a guarantee for this one.
+  </footer>
+
+</div>
+
+<div id="tooltip" role="tooltip"></div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
