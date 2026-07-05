@@ -3,9 +3,9 @@
 "use strict";
 
 const [rawDrivers, metrics, completedRace] = await Promise.all([
-    fetch("./json/predictions.json").then(r => r.json()),
+    fetch("./json/predictions.json?v=" + new Date().getTime()).then(r => r.json()),
     fetch("./json/metrics.json").then(r => r.json()),
-    fetch("./json/predictions.json").then(r => r.json()).then(data => data["completed race"])
+    fetch("./json/predictions.json?v=" + new Date().getTime()).then(r => r.json()).then(data => data["completed race"])
 ]);
 
 console.log("Completed race:", completedRace);
