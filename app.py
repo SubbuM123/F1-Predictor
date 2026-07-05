@@ -16,8 +16,8 @@ import scripts.cleaning as cleaning
 import scripts.knn_class as knn_class
 import scripts.eval as eval
 
-completed_race = -1
-point_total = -1
+# completed_race = -1
+# point_total = -1
 
 with open('json/data.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
@@ -39,8 +39,9 @@ def check_new_race(completed_race, point_total):
 
     if int(data["round"]) > completed_race:
         if total_points(data["StandingsLists"][0]["DriverStandings"]) - point_total > 36:
-            completed_race = int(data["round"])
+            # completed_race = int(data["round"])
             # print(f"New race detected: {completed_race}")
+            print("true")
             return True
 
     return False
