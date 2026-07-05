@@ -106,7 +106,7 @@ def update_predictions(completed_race, year = 2026, year_races = 22, sims = 1000
     knn_sim.set_neighbors(year)
 
     # change this to read json and covert to pandas
-    with open('training_data/current_standings2.json', 'r', encoding='utf-8') as file:
+    with open('training_data/current_standings.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
     df_eval = pd.DataFrame.from_dict(data, orient='index').reset_index().rename(columns={'index': 'driver'})
     df_eval['prev5_points'] = df_eval['prev5_points'].apply(ast.literal_eval)
