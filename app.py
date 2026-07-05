@@ -101,7 +101,7 @@ def update_data():
 
     json.dump(data, open("training_data/current_standings.json", "w"), indent=4)
 
-def update_predictions(completed_race, year = 2026, year_races = 22, sims = 10):
+def update_predictions(completed_race, year = 2026, year_races = 22, sims = 1000):
     knn_sim = knn_class.KNNSeasonSimulator()
     knn_sim.set_neighbors(year)
 
