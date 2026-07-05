@@ -19,7 +19,7 @@ import scripts.eval as eval
 # completed_race = -1
 # point_total = -1
 
-with open('json/data.json', 'r', encoding='utf-8') as file:
+with open('json/predictions.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
     completed_race = data["completed race"]
     point_total = data["point total"]
@@ -41,7 +41,6 @@ def check_new_race(completed_race, point_total):
         if total_points(data["StandingsLists"][0]["DriverStandings"]) - point_total > 36:
             # completed_race = int(data["round"])
             # print(f"New race detected: {completed_race}")
-            print("true")
             return True
 
     return False
@@ -167,7 +166,7 @@ if __name__ == "__main__":
     completed_race = -1
     point_total = -1
 
-    with open('json/data.json', 'r', encoding='utf-8') as file:
+    with open('json/predictions.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
         completed_race = data["completed race"]
         point_total = data["point total"]
