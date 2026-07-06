@@ -8,8 +8,7 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
     fetch("./json/predictions.json?v=" + new Date().getTime()).then(r => r.json()).then(data => data["completed race"])
 ]);
 
-console.log("Completed race:", completedRace);
-
+// console.log("Completed race:", completedRace);
 
   const TEAMS = [
     "Red Bull Racing", "Aston Martin Racing", "Cadillac F1 Team", "Haas F1 Team",
@@ -67,8 +66,10 @@ console.log("Completed race:", completedRace);
     team: DRIVER_TEAMS[name] || "Unknown"
     };
   }
-
-  const drivers = Object.keys(rawDrivers).map(key => {
+  const metadataKeys = new Set(["completed race", "point total"]);
+  const drivers = Object.keys(rawDrivers)
+  .filter(key => !metadataKeys.has(key))
+  .map(key => {
     const { name, team } = parseKey(key);
     const d = rawDrivers[key];
     return {
@@ -200,7 +201,11 @@ console.log("Completed race:", completedRace);
   function showTooltip(e, driver, cat){
     let html = '';
     if(cat === 'points'){
+      // TODO update these
       const r2 = metricAt('R2', racesLeft);
+      // const r2 = racesLeft > 13
+      // ? metricAt('R2', racesLeft)
+      // : metricAt('R2', 13);
       const mae = metricAt('Mean Absolute Error', racesLeft);
       const mare = metricAt('MARE', racesLeft);
       html = `
@@ -272,6 +277,7 @@ console.log("Completed race:", completedRace);
   });
 
   function renderTiles(){
+    // limit this upto the latest completed race -- fill past with disclaimer that data will fill in soon, so need a max value
     tileDefs.forEach(t => {
       const tile = tilesEl.querySelector(`[data-key="${t.key}"]`);
       const val = metricAt(t.key, racesLeft);
@@ -310,6 +316,7 @@ console.log("Completed race:", completedRace);
 
         // Keep the slider thumb synchronized
         scrubber.value = 19 - racesLeft;
+        //console.log("Scrubber value:", scrubber.value)
 
         racesLeftNum.textContent = racesLeft;
         hintNum.textContent = racesLeft;
