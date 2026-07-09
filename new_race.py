@@ -56,7 +56,7 @@ def update_data():
         # p5p
         prev5 = row["prev5_points"]
         prev5 = prev5[1:] + [earned_points]
-        # row["prev5_points"] = str(prev5)
+        row["prev5_points"] = prev5
 
         # p5a
         row["prev5_avg"] = round(sum(row["prev5_points"]) / 5, 2)

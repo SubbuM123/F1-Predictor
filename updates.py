@@ -80,7 +80,7 @@ def update_data():
         # p5p
         prev5 = row["prev5_points"]
         prev5[4] += changed_points
-        # row["prev5_points"] = str(prev5)
+        row["prev5_points"] = prev5
 
         # p5a
         row["prev5_avg"] = round(sum(row["prev5_points"]) / 5, 2)
