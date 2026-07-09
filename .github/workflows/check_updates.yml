@@ -1,4 +1,4 @@
-name: Check For New Races
+name: Check For Point Updates
 
 on:
   schedule:
