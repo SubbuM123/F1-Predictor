@@ -1,4 +1,4 @@
-name: Run Python App Every 2 Hours
+name: Check For New Races
 
 on:
   schedule:
@@ -29,7 +29,7 @@ jobs:
           fi
 
       - name: Run app
-        run: python app.py
+        run: python updates.py
 
       - name: Commit changes
         run: |
@@ -41,7 +41,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Automated update"
+            git commit -m "Automated update - Checked Score Updates"
           fi
 
       - name: Push changes

@@ -16,40 +16,45 @@ import scripts.cleaning as cleaning
 import scripts.knn_class as knn_class
 import scripts.eval as eval
 
-# completed_race = -1
-# point_total = -1
+def check_new_race(completed_race):
+  url = f"https://api.jolpi.ca/ergast/f1/2026/{completed_race + 1}/results.json"
 
-with open('json/predictions.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
-    completed_race = data["completed race"]
-    point_total = data["point total"]
+  response = requests.get(url)
 
-def total_points(data):
-    s = 0
-    for driver in data:
-        s += int(driver["points"])
-    return s
+  data = response.json()["MRData"]["RaceTable"]["Races"]
 
-def check_new_race(completed_race, point_total):
-    url = "https://api.jolpi.ca/ergast/f1/2026/driverStandings.json"
-
-    response = requests.get(url)
-    
-    data = response.json()["MRData"]["StandingsTable"]
-
-    if int(data["round"]) > completed_race:
-        if total_points(data["StandingsLists"][0]["DriverStandings"]) - point_total > 36:
-            # completed_race = int(data["round"])
-            # print(f"New race detected: {completed_race}")
-            return True
-
-    return False
+  return data != []
 
 def normalize_name(name):
     return "".join(
         c for c in unicodedata.normalize("NFD", name)
         if unicodedata.category(c) != "Mn"
     )
+
+def check_updates():
+    url = "https://api.jolpi.ca/ergast/f1/2026/driverStandings.json"
+
+    response = requests.get(url)
+    response.raise_for_status()  # Raises an exception if the request failed
+
+    data = response.json()["MRData"]["StandingsTable"]["StandingsLists"][0]["DriverStandings"]
+
+    points = {}
+
+    for driver in data:
+        points[normalize_name(driver["Driver"]["givenName"][0] + ". " + driver["Driver"]["familyName"])] = int(driver["points"])
+
+    with open('json/eval.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    for driver, new_total in points.items():
+        row = data[driver]
+
+        if new_total - row["current_points"] != 0:
+            return True
+    
+    return False
+
 
 def update_data():
     url = "https://api.jolpi.ca/ergast/f1/2026/driverStandings.json"
@@ -64,27 +69,27 @@ def update_data():
     for driver in data:
         points[normalize_name(driver["Driver"]["givenName"][0] + ". " + driver["Driver"]["familyName"])] = int(driver["points"])
 
-    with open('training_data/current_standings.json', 'r', encoding='utf-8') as file:
+    with open('json/eval.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
 
     for driver, new_total in points.items():
         row = data[driver]
 
-        earned_points = new_total - row["current_points"]
+        changed_points = new_total - row["current_points"]
 
         # p5p
-        prev5 = ast.literal_eval(row["prev5_points"])
-        prev5 = prev5[1:] + [earned_points]
-        row["prev5_points"] = str(prev5)
+        prev5 = row["prev5_points"]
+        prev5[4] += changed_points
+        # row["prev5_points"] = str(prev5)
 
         # p5a
-        row["prev5_points_avg"] = round(sum(ast.literal_eval(row["prev5_points"])) / 5, 2)
+        row["prev5_avg"] = round(sum(row["prev5_points"]) / 5, 2)
 
         # current points
         row["current_points"] = new_total
 
         # race number
-        row["race_number"] += 1
+        # row["race_number"] += 1
 
     leader_points = max(row["current_points"] for row in data.values())
 
@@ -99,27 +104,28 @@ def update_data():
         row["points_behind_leader"] = leader_points - row["current_points"]
         row["percent_of_max"] = row["current_points"] / leader_points
 
-    json.dump(data, open("training_data/current_standings.json", "w"), indent=4)
+    json.dump(data, open("json/eval.json", "w"), indent=4)
 
 def update_predictions(completed_race, year = 2026, year_races = 22, sims = 10000):
     knn_sim = knn_class.KNNSeasonSimulator()
     knn_sim.set_neighbors(year)
 
     # change this to read json and covert to pandas
-    with open('training_data/current_standings.json', 'r', encoding='utf-8') as file:
+    with open('json/eval.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
     df_eval = pd.DataFrame.from_dict(data, orient='index').reset_index().rename(columns={'index': 'driver'})
-    df_eval['prev5_points'] = df_eval['prev5_points'].apply(ast.literal_eval)
+    # df_eval['prev5_points'] = df_eval['prev5_points'].apply(ast.literal_eval)
 
     all_sims = []
     num_races = year_races
     # print(df_eval)
-    df_eval_small = (df_eval[df_eval.race_number == completed_race + 1]).set_index("driver").to_dict(orient='index')
+    df_eval_small = (df_eval[df_eval.race_number == completed_race]).set_index("driver").to_dict(orient='index')
+    print(df_eval_small)
     res = []
     for j in range(sims):
         df_sim = copy.deepcopy(df_eval_small)
         # print(df_sim)
-        # print(completed_race)
+        print(completed_race)
         df_sim = knn_sim.simulate_season(df_sim, num_races)
 
         res.append({
@@ -149,30 +155,22 @@ def update_predictions(completed_race, year = 2026, year_races = 22, sims = 1000
             
             c += 1
 
-    url = "https://api.jolpi.ca/ergast/f1/2026/driverStandings.json"
+    with open("json/all_predictions.json", 'r', encoding='utf-8') as f:
+        existing = json.load(f)
 
-    response = requests.get(url)
-    
-    data2 = response.json()["MRData"]["StandingsTable"]
-    
-    data["completed race"] = completed_race + 1
-    data["point total"] = total_points(data2["StandingsLists"][0]["DriverStandings"])
+    existing[str(completed_race)] = data
 
-    json_string = json.dumps(data, indent=4)
-    with open("json/predictions.json", "w") as file:
-        file.write(json_string)
+    with open("json/all_predictions.json", "w") as f: 
+        json.dump(existing, f, indent=4)
 
 if __name__ == "__main__":
-    completed_race = -1
-    point_total = -1
 
-    with open('json/predictions.json', 'r', encoding='utf-8') as file:
-        data = json.load(file)
-        completed_race = data["completed race"]
-        point_total = data["point total"]
-    # print(completed_race)
+    with open("json/all_predictions.json", 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    completed_race = max(map(int, data.keys()))
 
-    if check_new_race(completed_race, point_total):
-        # print(completed_race)
+    if check_new_race(completed_race):
+        print("race updates")
+    elif check_updates():
         update_data()
-        update_predictions(completed_race)
+        update_predictions(completed_race, sims = 10000)

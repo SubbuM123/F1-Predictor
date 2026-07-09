@@ -1,14 +1,19 @@
 (async function(){
 
 "use strict";
-
-const [rawDrivers, metrics, completedRace] = await Promise.all([
-    fetch("./json/predictions.json?v=" + new Date().getTime()).then(r => r.json()),
+// @TODO completed race needs to read from a new file with the current standings, not all predictions which only holds the knn model dat
+const [allPredictions, metrics] = await Promise.all([
+    fetch("./json/all_predictions.json?v=" + new Date().getTime()).then(r => r.json()),
     fetch("./json/metrics.json").then(r => r.json()),
-    fetch("./json/predictions.json?v=" + new Date().getTime()).then(r => r.json()).then(data => data["completed race"])
+    // fetch("./json/all_predictions.json?v=" + new Date().getTime()).then(r => r.json()).then(data => data["completed race"])
 ]);
 
+const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
+
 // console.log("Completed race:", completedRace);
+
+  const racesThisSeason = 22;
+  const maxRacesLeft = racesThisSeason - 5;
 
   const TEAMS = [
     "Red Bull Racing", "Aston Martin Racing", "Cadillac F1 Team", "Haas F1 Team",
@@ -67,20 +72,52 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
     };
   }
   const metadataKeys = new Set(["completed race", "point total"]);
-  const drivers = Object.keys(rawDrivers)
-  .filter(key => !metadataKeys.has(key))
-  .map(key => {
-    const { name, team } = parseKey(key);
-    const d = rawDrivers[key];
-    return {
-      name, team,
-      first: d["1st"] || 0,
-      podium: d["Podium"] || 0,
-      top5: d["Top 5"] || 0,
-      top10: d["Top 10"] || 0,
-      points: d["points"] || 0
-    };
-  }).sort((a,b) => b.points - a.points);
+  // const drivers = Object.keys(rawDrivers)
+  // .filter(key => !metadataKeys.has(key))
+  // .map(key => {
+  //   const { name, team } = parseKey(key);
+  //   const d = rawDrivers[key];
+  //   return {
+  //     name, team,
+  //     first: d["1st"] || 0,
+  //     podium: d["Podium"] || 0,
+  //     top5: d["Top 5"] || 0,
+  //     top10: d["Top 10"] || 0,
+  //     points: d["points"] || 0
+  //   };
+  // }).sort((a,b) => b.points - a.points);
+
+  let drivers = buildDrivers(completedRace);
+
+  function buildDrivers(completedRace) {
+    //console.log(racesLeft, racesThisSeason - racesLeft, allPredictions);
+    // const racesLeft = racesThisSeason - completedRace;
+    const rawDrivers = allPredictions[completedRace];
+
+    if (!rawDrivers)
+        return [];
+
+    return Object.keys(rawDrivers)
+        .filter(key => !metadataKeys.has(key))
+        .map(key => {
+
+            const { name, team } = parseKey(key);
+            const d = rawDrivers[key];
+
+            return {
+                name,
+                team,
+                first: d["1st"] || 0,
+                podium: d["Podium"] || 0,
+                top5: d["Top 5"] || 0,
+                top10: d["Top 10"] || 0,
+                points: d["points"] || 0
+            };
+
+        })
+        .sort((a,b) => b.points-a.points);
+  }
+
 
   const maxPoints = Math.max(...drivers.map(d => d.points));
   document.getElementById('driverCount').textContent = drivers.length;
@@ -101,8 +138,8 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
 
   // ---------- ticks ----------
   const ticksEl = document.getElementById('ticks');
-  const shownTicks = [18,15,12,9,6,3,1];
-  for(let n = 18; n >= 1; n--){
+  const shownTicks = [maxRacesLeft, 15,13,11,9,7,5,3,1];
+  for(let n = maxRacesLeft; n >= 1; n--){
     const s = document.createElement('span');
     s.textContent = shownTicks.includes(n) ? n : "";
     if(shownTicks.includes(n)) s.classList.add('on');
@@ -117,48 +154,6 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
     { key: 'top5', cat: 'top5', digits: 2 },
     { key: 'top10', cat: 'top10', digits: 2 }
   ];
-
-  drivers.forEach((d, i) => {
-    const row = document.createElement('div');
-    row.className = 'row-grid driver-row';
-
-    const teamColor = TEAM_COLORS[d.team] || "#888";
-
-    row.innerHTML = `
-      <div class="pos">${i+1}</div>
-      <div class="team-stripe" style="background:${teamColor}"></div>
-      <div class="driver-id">
-        <div class="driver-name">${d.name}</div>
-        <div class="driver-team">${d.team}</div>
-      </div>
-      <div class="pts-cell" data-role="points">
-        <div class="pts-num">${Math.round(d.points)}</div>
-        <div class="pts-bar-track"><div class="pts-bar-fill" style="width:${(d.points/maxPoints*100).toFixed(1)}%"></div></div>
-      </div>
-      ${probFields.map(f => {
-        const val = d[f.key];
-        const zero = val < 0.005;
-        return `
-        <div class="prob-cell" data-role="prob" data-cat="${f.cat}">
-          <div class="prob-num ${zero ? 'zero' : ''}">${zero ? '—' : pct(val, 2)}</div>
-          <div class="prob-bar-track"><div class="prob-bar-fill" style="width:${Math.min(val,100).toFixed(1)}%; opacity:${0.35 + Math.min(val,100)/100*0.65}"></div></div>
-        </div>`;
-      }).join('')}
-    `;
-
-    rowsEl.appendChild(row);
-
-    // attach hover handlers
-    row.querySelectorAll('[data-role="prob"]').forEach(cell => {
-      cell.addEventListener('mouseenter', (e) => showTooltip(e, d, cell.dataset.cat));
-      cell.addEventListener('mousemove', positionTooltip);
-      cell.addEventListener('mouseleave', hideTooltip);
-    });
-    const ptsCell = row.querySelector('[data-role="points"]');
-    ptsCell.addEventListener('mouseenter', (e) => showTooltip(e, d, 'points'));
-    ptsCell.addEventListener('mousemove', positionTooltip);
-    ptsCell.addEventListener('mouseleave', hideTooltip);
-  });
 
   // ---------- tooltip ----------
   const tooltip = document.getElementById('tooltip');
@@ -201,7 +196,6 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
   function showTooltip(e, driver, cat){
     let html = '';
     if(cat === 'points'){
-      // TODO update these
       const r2 = metricAt('R2', racesLeft);
       // const r2 = racesLeft > 13
       // ? metricAt('R2', racesLeft)
@@ -281,11 +275,11 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
     tileDefs.forEach(t => {
       const tile = tilesEl.querySelector(`[data-key="${t.key}"]`);
       const val = metricAt(t.key, racesLeft);
-      const base = metricAt(t.key, 18);
+      const base = metricAt(t.key, maxRacesLeft);
       tile.querySelector('.tv').textContent = t.fmt(val);
       const deltaEl = tile.querySelector('.td');
       const diff = t.isPct ? (val - base) * 100 : (val - base);
-      if(racesLeft === 18){
+      if(racesLeft === maxRacesLeft){
         deltaEl.innerHTML = `<span class="base">baseline &mdash; season start</span>`;
         deltaEl.className = 'tile-delta';
       } else {
@@ -296,6 +290,11 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
       }
     });
   }
+
+  function currentPrediction() {
+    return allPredictions[racesLeft];
+  }
+
 
   // ---------- scrubber wiring ----------
   const scrubber = document.getElementById('scrubber');
@@ -315,24 +314,110 @@ const [rawDrivers, metrics, completedRace] = await Promise.all([
     function renderScrubber(){
 
         // Keep the slider thumb synchronized
-        scrubber.value = 19 - racesLeft;
+        scrubber.value = (maxRacesLeft + 1) - racesLeft;
         //console.log("Scrubber value:", scrubber.value)
 
         racesLeftNum.textContent = racesLeft;
         hintNum.textContent = racesLeft;
 
-        const pctFill = ((18-racesLeft)/17)*100;
+        const pctFill = ((maxRacesLeft-racesLeft)/(maxRacesLeft-1))*100;
         trackFill.style.width = pctFill + '%';
     }
 
-  scrubber.addEventListener('input', (e) => {
-    // racesLeft = parseInt(e.target.value, 10);
-    const sliderValue = parseInt(e.target.value,10);
-    racesLeft = 19 - sliderValue;
+    function renderDriverRows() {
+
+
+
+      rowsEl.innerHTML = "";
+
+        drivers.forEach((d, i) => {
+          const row = document.createElement('div');
+          row.className = 'row-grid driver-row';
+
+          const teamColor = TEAM_COLORS[d.team] || "#888";
+
+          row.innerHTML = `
+            <div class="pos">${i+1}</div>
+            <div class="team-stripe" style="background:${teamColor}"></div>
+            <div class="driver-id">
+              <div class="driver-name">${d.name}</div>
+              <div class="driver-team">${d.team}</div>
+            </div>
+            <div class="pts-cell" data-role="points">
+              <div class="pts-num">${Math.round(d.points)}</div>
+              <div class="pts-bar-track"><div class="pts-bar-fill" style="width:${(d.points/maxPoints*100).toFixed(1)}%"></div></div>
+            </div>
+            ${probFields.map(f => {
+              const val = d[f.key];
+              const zero = val < 0.005;
+              return `
+              <div class="prob-cell" data-role="prob" data-cat="${f.cat}">
+                <div class="prob-num ${zero ? 'zero' : ''}">${zero ? '—' : pct(val, 2)}</div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" style="width:${Math.min(val,100).toFixed(1)}%; opacity:${0.35 + Math.min(val,100)/100*0.65}"></div></div>
+              </div>`;
+            }).join('')}
+          `;
+
+          rowsEl.appendChild(row);
+
+          // attach hover handlers
+          row.querySelectorAll('[data-role="prob"]').forEach(cell => {
+            cell.addEventListener('mouseenter', (e) => showTooltip(e, d, cell.dataset.cat));
+            cell.addEventListener('mousemove', positionTooltip);
+            cell.addEventListener('mouseleave', hideTooltip);
+          });
+          const ptsCell = row.querySelector('[data-role="points"]');
+          ptsCell.addEventListener('mouseenter', (e) => showTooltip(e, d, 'points'));
+          ptsCell.addEventListener('mousemove', positionTooltip);
+          ptsCell.addEventListener('mouseleave', hideTooltip);
+        });
+
+    }
+
+
+  // scrubber.addEventListener('input', (e) => {
+  //   // racesLeft = parseInt(e.target.value, 10);
+  //   const sliderValue = parseInt(e.target.value,10);
+  //   racesLeft = 19 - sliderValue;
+  //   renderScrubber();
+  //   renderTiles();
+  // });
+
+  const boardTitle = document.getElementById("boardTitle");
+  const boardNote = document.getElementById("boardNote");
+
+  function renderBoardHeader() {
+      // @TODO pull race cities and pair with race num
+      const raceCompleted = racesThisSeason - racesLeft;
+
+      boardTitle.innerHTML =
+          `Driver Standings &mdash; Projected (After Race ${raceCompleted}, in a ${racesThisSeason} Race Season)`;
+
+      if (raceCompleted > completedRace) {
+          boardNote.textContent = "Stay tuned for more updates!";
+      } else {
+          boardNote.textContent = "Sorted by projected points";
+      }
+  }
+
+  scrubber.addEventListener("input", e => {
+
+    racesLeft = (maxRacesLeft + 1) - Number(e.target.value);
+
+    drivers = buildDrivers(racesThisSeason - racesLeft);
+
+    renderBoardHeader();
+
+    renderDriverRows();
+
     renderScrubber();
+
     renderTiles();
+
   });
 
+  renderBoardHeader();
+  renderDriverRows();
   renderScrubber();
   renderTiles();
 

@@ -33,6 +33,24 @@ class KNNSeasonSimulator:
         df_neighbors["prev5_points"] = (
             df_neighbors["prev5_points"].apply(ast.literal_eval)
         )
+        # next 15 lines new
+        df_neighbors["prev5_points"] = (
+            df_neighbors.groupby("driver", sort=False)["prev5_points"]
+            .shift(-1)
+        )
+
+        df_neighbors["prev5_points"] = df_neighbors["prev5_points"].apply(
+            lambda x: x if isinstance(x, list) else []
+        )
+
+        df_neighbors["prev5_avg"] = (
+            df_neighbors.groupby("driver", sort=False)["prev5_avg"]
+            .shift(-1)
+        )
+
+        df_neighbors["prev5_avg"] = df_neighbors["prev5_avg"].apply(
+            lambda x: x if isinstance(x, list) else -1
+        )
 
         self.future_results = df_neighbors["future_results"].to_numpy()
 

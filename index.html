@@ -17,7 +17,7 @@
     <div>
       <div class="eyebrow">2026 Season &middot; Model Prediction</div>
       <h1 class="title">Championship <span class="accent">Prediction</span></h1>
-      <p class="subtitle">Models finishing probabilities for every driver on the grid, weighed against how this model has actually performed at this stage of past seasons (trained and tested from 2015-2025).</p>
+      <p class="subtitle">Models the finishing points and probabilities for every driver on the grid, based on historical performance of similar drivers (trained and tested from 2015-2025, metrics below).</p>
     </div>
     <div class="masthead-right">
       <div class="label">Drivers Tracked</div>
@@ -37,7 +37,7 @@
     </div>
     <div class="slider-wrap">
       <div class="track-bg"><div class="track-fill" id="trackFill"></div></div>
-      <input type="range" class="scrubber" id="scrubber" min="1" max="18" value="14" step="1" aria-label="Races remaining">
+      <input type="range" class="scrubber" id="scrubber" min="1" max="17" value="14" step="1" aria-label="Races remaining">
     </div>
     <div class="ticks" id="ticks"></div>
     <p class="scrubber-hint">Drag to see how confident this model has historically been with <b id="hintNum">14</b> races left to run — then hover any probability below to see the full track record.</p>
@@ -45,9 +45,14 @@
 
   <div class="tiles" id="tiles"></div>
 
-  <div class="board-header-row">
+  <!-- <div class="board-header-row">
     <div class="board-title">Driver Standings &mdash; Projected (After Race 8, in a 22 Race Season)</div>
     <div class="board-note">Sorted by projected points</div>
+  </div> -->
+
+  <div class="board-header-row">
+      <div class="board-title" id="boardTitle"></div>
+      <div class="board-note" id="boardNote"></div>
   </div>
 
   <div class="board">
