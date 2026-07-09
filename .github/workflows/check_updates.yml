@@ -2,7 +2,7 @@ name: Check For New Races
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */12 * * *'
   workflow_dispatch:
 
 permissions:
