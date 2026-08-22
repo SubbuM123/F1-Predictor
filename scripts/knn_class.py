@@ -93,7 +93,11 @@ class KNNSeasonSimulator:
         # ---------------------------------------
         # Query matrix from dictionary
         # ---------------------------------------
-        drivers = list(train_dict.keys())
+        drivers = [driver for driver, stats in train_dict.items() if stats.get("race_number", -1) >= 0]
+        if not drivers:
+            return {}
+
+        train_dict = {driver: train_dict[driver] for driver in drivers}
 
         # X_query = np.array([
         #     [train_dict[d][col] for col in feature_cols]
@@ -181,12 +185,16 @@ class KNNSeasonSimulator:
         # now, need to recalcuate df_train_updated to reflect updated features:
         # prev5_avg	points_behind_leader	points_behind_second	race_number	position	percent_of_max
 
-        for driver in df_train_updated:
-            df_train_updated[driver]["race_number"] *= num_races
-            df_train_updated[driver]["race_number"] += 1
+        active_drivers = {driver: stats for driver, stats in df_train_updated.items() if stats.get("race_number", -1) >= 0}
+        if not active_drivers:
+            return df_train_updated
+
+        for driver in active_drivers:
+            active_drivers[driver]["race_number"] *= num_races
+            active_drivers[driver]["race_number"] += 1
 
         leaderboard = sorted(
-            df_train_updated.items(),
+            active_drivers.items(),
             key=lambda x: x[1]["current_points"],
             reverse=True
         )
@@ -197,6 +205,13 @@ class KNNSeasonSimulator:
             stats["position"] = pos
 
         for driver, stats in df_train_updated.items():
+            if stats.get("race_number", -1) < 0:
+                stats["position"] = len(leaderboard) + 1
+                stats["points_behind_leader"] = None
+                stats["percent_of_max"] = None
+                stats["prev5_avg"] = None
+                continue
+
             stats["points_behind_leader"] = (
                 leader_points - stats["current_points"]
             )
@@ -204,11 +219,15 @@ class KNNSeasonSimulator:
         current_race = leaderboard[0][1]["race_number"]
 
         for driver, stats in df_train_updated.items():
+            if stats.get("race_number", -1) < 0:
+                continue
             stats["percent_of_max"] = (
                 stats["current_points"] / leader_points
             )
 
         for driver, stats in df_train_updated.items():
+            if stats.get("race_number", -1) < 0:
+                continue
 
             # if "prev5_points" not in stats:
             #     stats["prev5_points"] = []
@@ -226,10 +245,11 @@ class KNNSeasonSimulator:
     def simulate_season(self, df_sim, num_races):
         #df_sim = copy.deepcopy(df_train)
         # print(df_sim)
-        curr_race = -1
-        for k in df_sim.keys():
-            curr_race = df_sim[k]["race_number"]
-            break
+        valid_races = [stats["race_number"] for stats in df_sim.values() if stats.get("race_number", -1) >= 0]
+        if not valid_races:
+            return df_sim
+
+        curr_race = max(valid_races)
         
         if curr_race < 0 or curr_race > 30:
             # print(curr_race)

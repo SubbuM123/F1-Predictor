@@ -49,8 +49,19 @@ def update_data():
         data = json.load(file)
 
     for driver, new_total in points.items():
-        row = data[driver]
+        if driver not in data:
+            data[driver] = {
+                "prev5_avg": None,
+                "prev5_points": [],
+                "points_behind_leader": None,
+                "current_points": int(new_total),
+                "percent_of_max": None,
+                "position": None,
+                "race_number": -1,
+            }
+            continue
 
+        row = data[driver]
         earned_points = new_total - row["current_points"]
 
         # p5p
@@ -67,18 +78,23 @@ def update_data():
         # race number
         row["race_number"] += 1
 
-    leader_points = max(row["current_points"] for row in data.values())
+    active_rows = {driver: row for driver, row in data.items() if row.get("race_number", -1) >= 0}
+    placeholder_rows = {driver: row for driver, row in data.items() if row.get("race_number", -1) < 0}
+    leader_points = max((row["current_points"] for row in active_rows.values()), default=0)
 
-    sorted_drivers = sorted(
-        data.items(),
-        key=lambda x: x[1]["current_points"],
-        reverse=True
-    )
+    sorted_drivers = sorted(active_rows.items(), key=lambda x: x[1]["current_points"], reverse=True)
+    sorted_drivers.extend(sorted(placeholder_rows.items(), key=lambda x: x[1]["current_points"], reverse=True))
 
     for position, (driver, row) in enumerate(sorted_drivers, start=1):
+        if row.get("race_number", -1) < 0:
+            row["position"] = position
+            row["points_behind_leader"] = None
+            row["percent_of_max"] = None
+            continue
+
         row["position"] = position
         row["points_behind_leader"] = leader_points - row["current_points"]
-        row["percent_of_max"] = row["current_points"] / leader_points
+        row["percent_of_max"] = row["current_points"] / leader_points if leader_points else 0.0
 
     json.dump(data, open("json/eval.json", "w"), indent=4)
 
@@ -139,6 +155,7 @@ def update_predictions(completed_race, year = 2026, year_races = 22, sims = 1000
         json.dump(existing, f, indent=4)
 
 if __name__ == "__main__":
+    num_races = 
 
     with open("json/all_predictions.json", 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -147,4 +164,4 @@ if __name__ == "__main__":
     if check_new_race(completed_race):
         completed_race += 1
         update_data()
-        update_predictions(completed_race, sims = 10000)
+        update_predictions(completed_race, year_races = num_races, sims = 10000)

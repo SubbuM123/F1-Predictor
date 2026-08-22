@@ -45,6 +45,10 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
   "S. Perez": "Cadillac F1 Team"
   };
 
+  function isNewDriverName(name) {
+    return !(name in DRIVER_TEAMS);
+  }
+
   const TEAM_COLORS = {
     "Mercedes": "#27F4C4",
     "Ferrari": "#E8002D",
@@ -68,7 +72,7 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
   function parseKey(name) {
   return {
     name,
-    team: DRIVER_TEAMS[name] || "Unknown"
+    team: DRIVER_TEAMS[name] || "New driver"
     };
   }
   const metadataKeys = new Set(["completed race", "point total"]);
@@ -103,15 +107,17 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
 
             const { name, team } = parseKey(key);
             const d = rawDrivers[key];
+            const isNew = isNewDriverName(name);
 
             return {
                 name,
                 team,
-                first: d["1st"] || 0,
-                podium: d["Podium"] || 0,
-                top5: d["Top 5"] || 0,
-                top10: d["Top 10"] || 0,
-                points: d["points"] || 0
+                isNew,
+                first: d["1st"] ?? null,
+                podium: d["Podium"] ?? null,
+                top5: d["Top 5"] ?? null,
+                top10: d["Top 10"] ?? null,
+                points: d["points"] ?? 0
             };
 
         })
@@ -335,6 +341,7 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
           row.className = 'row-grid driver-row';
 
           const teamColor = TEAM_COLORS[d.team] || "#888";
+          const pointsValue = d.points ?? 0;
 
           row.innerHTML = `
             <div class="pos">${i+1}</div>
@@ -344,16 +351,18 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
               <div class="driver-team">${d.team}</div>
             </div>
             <div class="pts-cell" data-role="points">
-              <div class="pts-num">${Math.round(d.points)}</div>
-              <div class="pts-bar-track"><div class="pts-bar-fill" style="width:${(d.points/maxPoints*100).toFixed(1)}%"></div></div>
+              <div class="pts-num">${Math.round(pointsValue)}</div>
+              <div class="pts-bar-track"><div class="pts-bar-fill" style="width:${(pointsValue/maxPoints*100).toFixed(1)}%"></div></div>
             </div>
             ${probFields.map(f => {
               const val = d[f.key];
-              const zero = val < 0.005;
+              const isMissing = val == null || Number.isNaN(Number(val));
+              const displayVal = isMissing ? '—' : pct(val, 2);
+              const fillPercent = isMissing ? 0 : Math.min(Number(val), 100).toFixed(1);
               return `
               <div class="prob-cell" data-role="prob" data-cat="${f.cat}">
-                <div class="prob-num ${zero ? 'zero' : ''}">${zero ? '—' : pct(val, 2)}</div>
-                <div class="prob-bar-track"><div class="prob-bar-fill" style="width:${Math.min(val,100).toFixed(1)}%; opacity:${0.35 + Math.min(val,100)/100*0.65}"></div></div>
+                <div class="prob-num ${isMissing ? 'zero' : ''}">${displayVal}</div>
+                <div class="prob-bar-track"><div class="prob-bar-fill" style="width:${fillPercent}%; opacity:${isMissing ? 0 : 0.35 + Math.min(Number(val),100)/100*0.65}"></div></div>
               </div>`;
             }).join('')}
           `;
