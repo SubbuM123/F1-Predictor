@@ -12,7 +12,9 @@ const completedRace = Math.max(...Object.keys(allPredictions).map(Number));
 
 // console.log("Completed race:", completedRace);
 
-  const racesThisSeason = 22;
+  const config = await fetch("./json/config.json").then(r => r.json());
+  const racesThisSeason = config["num_races"];
+
   const maxRacesLeft = racesThisSeason - 5;
 
   const TEAMS = [
