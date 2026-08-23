@@ -155,7 +155,7 @@ def update_predictions(completed_race, year = 2026, year_races = 22, sims = 1000
         json.dump(existing, f, indent=4)
 
 if __name__ == "__main__":
-    config = json.load(open("config.json"))
+    config = json.load(open("json/config.json"))
     num_races = config["num_races"]
 
     with open("json/all_predictions.json", 'r', encoding='utf-8') as f:
