@@ -1,215 +1,200 @@
 {
     "A. Antonelli": {
-        "prev5_avg": 22.6,
+        "prev5_avg": 19.6,
         "prev5_points": [
-            25,
             15,
             23,
             25,
-            25
+            25,
+            10
         ],
         "points_behind_leader": 0,
-        "current_points": 292,
+        "current_points": 302,
         "percent_of_max": 1.0,
         "position": 1,
-        "race_number": 14
+        "race_number": 15
     },
     "G. Russell": {
-        "prev5_avg": 11.4,
+        "prev5_avg": 16.4,
         "prev5_points": [
-            0,
             6,
             23,
             18,
-            10
+            10,
+            25
         ],
-        "points_behind_leader": 81,
-        "current_points": 211,
-        "percent_of_max": 0.7226027397260274,
+        "points_behind_leader": 66,
+        "current_points": 236,
+        "percent_of_max": 0.7814569536423841,
         "position": 2,
-        "race_number": 14
+        "race_number": 15
     },
     "L. Hamilton": {
-        "prev5_avg": 8.8,
+        "prev5_avg": 8.0,
         "prev5_points": [
-            12,
             10,
             14,
             8,
-            0
+            0,
+            8
         ],
-        "points_behind_leader": 101,
-        "current_points": 191,
-        "percent_of_max": 0.6541095890410958,
+        "points_behind_leader": 103,
+        "current_points": 199,
+        "percent_of_max": 0.6589403973509934,
         "position": 3,
-        "race_number": 14
+        "race_number": 15
     },
     "C. Leclerc": {
-        "prev5_avg": 11.8,
+        "prev5_avg": 10.6,
         "prev5_points": [
-            18,
             12,
             17,
             0,
+            12,
             12
         ],
-        "points_behind_leader": 125,
-        "current_points": 167,
-        "percent_of_max": 0.571917808219178,
+        "points_behind_leader": 123,
+        "current_points": 179,
+        "percent_of_max": 0.5927152317880795,
         "position": 5,
-        "race_number": 14
+        "race_number": 15
     },
     "L. Norris": {
-        "prev5_avg": 17.8,
+        "prev5_avg": 16.6,
         "prev5_points": [
-            6,
             25,
             31,
             12,
-            15
+            15,
+            0
         ],
-        "points_behind_leader": 106,
+        "points_behind_leader": 116,
         "current_points": 186,
-        "percent_of_max": 0.636986301369863,
+        "percent_of_max": 0.6158940397350994,
         "position": 4,
-        "race_number": 14
+        "race_number": 15
     },
     "O. Piastri": {
-        "prev5_avg": 7.6,
+        "prev5_avg": 5.6,
         "prev5_points": [
-            10,
             0,
             12,
             12,
-            4
+            4,
+            0
         ],
-        "points_behind_leader": 172,
+        "points_behind_leader": 182,
         "current_points": 120,
-        "percent_of_max": 0.410958904109589,
+        "percent_of_max": 0.3973509933774834,
         "position": 7,
-        "race_number": 14
+        "race_number": 15
     },
     "M. Verstappen": {
-        "prev5_avg": 13.8,
+        "prev5_avg": 14.4,
         "prev5_points": [
-            15,
             18,
             3,
             15,
+            18,
             18
         ],
-        "points_behind_leader": 147,
-        "current_points": 145,
-        "percent_of_max": 0.4965753424657534,
+        "points_behind_leader": 139,
+        "current_points": 163,
+        "percent_of_max": 0.5397350993377483,
         "position": 6,
-        "race_number": 14
+        "race_number": 15
     },
     "I. Hadjar": {
-        "prev5_avg": 3.8,
+        "prev5_avg": 5.2,
         "prev5_points": [
-            8,
             8,
             0,
             3,
-            0
+            0,
+            15
         ],
-        "points_behind_leader": 221,
-        "current_points": 71,
-        "percent_of_max": 0.24315068493150685,
+        "points_behind_leader": 216,
+        "current_points": 86,
+        "percent_of_max": 0.2847682119205298,
         "position": 8,
-        "race_number": 14
+        "race_number": 15
     },
     "P. Gasly": {
         "prev5_avg": -0.2,
         "prev5_points": [
             0,
-            0,
             2,
             -3,
+            0,
             0
         ],
-        "points_behind_leader": 251,
+        "points_behind_leader": 261,
         "current_points": 41,
-        "percent_of_max": 0.1404109589041096,
+        "percent_of_max": 0.1357615894039735,
         "position": 10,
-        "race_number": 14
+        "race_number": 15
     },
     "L. Lawson": {
         "prev5_avg": 4.0,
         "prev5_points": [
-            0,
             4,
             6,
             2,
-            8
+            8,
+            0
         ],
-        "points_behind_leader": 233,
+        "points_behind_leader": 243,
         "current_points": 59,
-        "percent_of_max": 0.20205479452054795,
+        "percent_of_max": 0.19536423841059603,
         "position": 9,
-        "race_number": 14
+        "race_number": 15
     },
     "A. Lindblad": {
-        "prev5_avg": 2.2,
+        "prev5_avg": 3.0,
         "prev5_points": [
-            2,
             1,
             0,
             6,
-            2
-        ],
-        "points_behind_leader": 261,
-        "current_points": 31,
-        "percent_of_max": 0.10616438356164383,
-        "position": 11,
-        "race_number": 14
-    },
-    "O. Bearman": {
-        "prev5_avg": 0.0,
-        "prev5_points": [
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        "points_behind_leader": 274,
-        "current_points": 18,
-        "percent_of_max": 0.06164383561643835,
-        "position": 13,
-        "race_number": 14
-    },
-    "F. Colapinto": {
-        "prev5_avg": 1.8,
-        "prev5_points": [
-            1,
-            0,
-            0,
             2,
             6
         ],
         "points_behind_leader": 265,
-        "current_points": 27,
-        "percent_of_max": 0.09246575342465753,
-        "position": 12,
-        "race_number": 14
+        "current_points": 37,
+        "percent_of_max": 0.12251655629139073,
+        "position": 11,
+        "race_number": 15
     },
-    "G. Bortoleto": {
-        "prev5_avg": 0.8,
+    "O. Bearman": {
+        "prev5_avg": 0.4,
         "prev5_points": [
-            4,
             0,
             0,
             0,
-            0
+            0,
+            2
         ],
         "points_behind_leader": 282,
-        "current_points": 10,
-        "percent_of_max": 0.03424657534246575,
-        "position": 14,
-        "race_number": 14
+        "current_points": 20,
+        "percent_of_max": 0.06622516556291391,
+        "position": 13,
+        "race_number": 15
     },
-    "C. Sainz": {
+    "F. Colapinto": {
+        "prev5_avg": 1.6,
+        "prev5_points": [
+            0,
+            0,
+            2,
+            6,
+            0
+        ],
+        "points_behind_leader": 275,
+        "current_points": 27,
+        "percent_of_max": 0.08940397350993377,
+        "position": 12,
+        "race_number": 15
+    },
+    "G. Bortoleto": {
         "prev5_avg": 0.0,
         "prev5_points": [
             0,
@@ -218,11 +203,26 @@
             0,
             0
         ],
-        "points_behind_leader": 286,
-        "current_points": 6,
-        "percent_of_max": 0.02054794520547945,
-        "position": 16,
-        "race_number": 14
+        "points_behind_leader": 292,
+        "current_points": 10,
+        "percent_of_max": 0.033112582781456956,
+        "position": 14,
+        "race_number": 15
+    },
+    "C. Sainz": {
+        "prev5_avg": 0.2,
+        "prev5_points": [
+            0,
+            0,
+            0,
+            0,
+            1
+        ],
+        "points_behind_leader": 295,
+        "current_points": 7,
+        "percent_of_max": 0.023178807947019868,
+        "position": 15,
+        "race_number": 15
     },
     "A. Albon": {
         "prev5_avg": 0.0,
@@ -233,56 +233,56 @@
             0,
             0
         ],
-        "points_behind_leader": 287,
+        "points_behind_leader": 297,
         "current_points": 5,
-        "percent_of_max": 0.017123287671232876,
-        "position": 17,
-        "race_number": 14
+        "percent_of_max": 0.016556291390728478,
+        "position": 18,
+        "race_number": 15
     },
     "E. Ocon": {
-        "prev5_avg": 0.0,
+        "prev5_avg": 0.8,
         "prev5_points": [
             0,
             0,
             0,
             0,
-            0
+            4
         ],
-        "points_behind_leader": 289,
-        "current_points": 3,
-        "percent_of_max": 0.010273972602739725,
-        "position": 18,
-        "race_number": 14
+        "points_behind_leader": 295,
+        "current_points": 7,
+        "percent_of_max": 0.023178807947019868,
+        "position": 16,
+        "race_number": 15
     },
     "F. Alonso": {
         "prev5_avg": 0.4,
         "prev5_points": [
             0,
-            0,
             2,
+            0,
             0,
             0
         ],
-        "points_behind_leader": 289,
+        "points_behind_leader": 299,
         "current_points": 3,
-        "percent_of_max": 0.010273972602739725,
+        "percent_of_max": 0.009933774834437087,
         "position": 19,
-        "race_number": 14
+        "race_number": 15
     },
     "N. Hulkenberg": {
         "prev5_avg": 1.4,
         "prev5_points": [
-            0,
             2,
             4,
             0,
-            1
+            1,
+            0
         ],
-        "points_behind_leader": 285,
+        "points_behind_leader": 295,
         "current_points": 7,
-        "percent_of_max": 0.023972602739726026,
-        "position": 15,
-        "race_number": 14
+        "percent_of_max": 0.023178807947019868,
+        "position": 17,
+        "race_number": 15
     },
     "V. Bottas": {
         "prev5_avg": 0.0,
@@ -293,11 +293,11 @@
             0,
             0
         ],
-        "points_behind_leader": 292,
+        "points_behind_leader": 302,
         "current_points": 0,
         "percent_of_max": 0.0,
         "position": 21,
-        "race_number": 14
+        "race_number": 15
     },
     "S. Perez": {
         "prev5_avg": 0.0,
@@ -308,11 +308,11 @@
             0,
             0
         ],
-        "points_behind_leader": 292,
+        "points_behind_leader": 302,
         "current_points": 0,
         "percent_of_max": 0.0,
         "position": 22,
-        "race_number": 14
+        "race_number": 15
     },
     "L. Stroll": {
         "prev5_avg": 0.0,
@@ -323,21 +323,21 @@
             0,
             0
         ],
-        "points_behind_leader": 292,
+        "points_behind_leader": 302,
         "current_points": 0,
         "percent_of_max": 0.0,
         "position": 23,
-        "race_number": 14
+        "race_number": 15
     },
     "Y. Tsunoda": {
         "prev5_avg": 0.0,
         "prev5_points": [
             0
         ],
-        "points_behind_leader": 291,
+        "points_behind_leader": 301,
         "current_points": 1,
-        "percent_of_max": 0.003424657534246575,
+        "percent_of_max": 0.0033112582781456954,
         "position": 20,
-        "race_number": 1
+        "race_number": 2
     }
 }
